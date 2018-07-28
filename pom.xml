@@ -120,7 +120,18 @@
 							</execution>
 						</executions>
 					</plugin>
-				</plugins>
+				<plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>cobertura-maven-plugin</artifactId>
+          <version>2.7</version>
+          <configuration>
+              <format>xml</format>
+              <maxmem>256m</maxmem>
+              <!-- aggregated reports for multi-module projects -->
+              <aggregate>true</aggregate>
+          </configuration>
+         </plugin>
+        </plugins>
 			</build>
 		</profile>
 	</profiles>
@@ -219,6 +230,7 @@
 						</dependency>
 					</dependencies>
 					<configuration>
+<testFailureIgnore>true</testFailureIgnore>
 						<testNGArtifactName>none:none</testNGArtifactName>
 					</configuration>
 				</plugin>
@@ -279,7 +291,18 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>2.10.3</version>
 				</plugin>
-			</plugins>
+			<plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>cobertura-maven-plugin</artifactId>
+          <version>2.7</version>
+          <configuration>
+              <format>xml</format>
+              <maxmem>256m</maxmem>
+              <!-- aggregated reports for multi-module projects -->
+              <aggregate>true</aggregate>
+          </configuration>
+         </plugin>
+        </plugins>
 		</pluginManagement>
 	</build>
 
