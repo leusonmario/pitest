@@ -1,5 +1,5 @@
-sudo: false
 
+sudo: required
 language: java
 
 jdk:
@@ -7,20 +7,23 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 
-env:
-  global:
-  # taken first download mirror from http://maven.apache.org/
-    - BASEURL=http://mirror.softaculous.com/apache/maven/maven-3/VERSION/binaries/apache-maven-VERSION-bin.tar.gz
-    - FILE=apache-maven-VERSION-bin.tar.gz
-    - DIR=apache-maven-VERSION/bin
-  matrix:
-    - VERSION=3.3.9
-    - VERSION=3.2.5
-    - VERSION=3.1.1
-    - VERSION=3.0.5
+
 
 script:
-  - wget $(echo -n $BASEURL | sed -e 's#VERSION#'$VERSION'#g')
-  - tar -xvzf $(echo -n $FILE | sed -e 's#VERSION#'$VERSION'#')
-  - export PATH=$(echo -n $DIR | sed -e 's#VERSION#'$VERSION'#'):$PATH
-  - mvn clean verify
+  - mvn clean cobertura:cobertura -Dtest=DecompilerTest#shouldDecompileJava -DfailIfNoTests=false
+
+before_deploy:
+- tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/pitest/target/site/cobertura
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "GvYhJT7MVfhPm7ixeBjScdaJLCExavhjt+gAgEyymxVJy5UAl6aWFMo7KVm98HCSI2UjuPW6K5rO4fdgEc71yiNYCeVozTwDEQLAm4fvK9sLh1tFO4JkWAPRxzgRBZdSmGYUkdYK5d+ayoxY7uwiZzCWMRUNQs+ZBWSSo2Oul1GiAKjnOVKAOmpXdDCnEGE3+z/8cFsU0RRt7pN/R0cc33Am/4Dpe41e4D9YbfvFUew3YPe4iSRHCZs/R5vWOIX2dCfwCaN5ci+6k5g3Wyd+Vz/mkJbNK/xEULAVTMgCtds4hfPuvJT1sOgIn2A1v/S6z2xU5Di4RVUowgBOX1lfsqfDzDlwm6/5G0RCQicXuS2FrsuAi6UdfDQb8JyFFOfgpT4R1W6aWqf9Zv2UM+7I961vbNndWeRtYAgigNWtyKAn1l04tLLaeQKlYOM9imjKU3WjSe8NXz5uhaqsKavSPMD2svQZesE38EQ4ur0WZ1w1aDftkQb0G3Cg8FsYuEFr3M8dxeYHevRoZO5uSaPRvyp+Lz9Lj3vgx3t2dac2TnqWJv9OvhVjAWHuMAw/tAZXfN3RSc0U4QCGS/tjelAkB7JZyQtTzXjF33evo7pfGCilQLT0B04KAZEZvO5inJa8Y4cQMr0MXG6Za+J8ggZg2JbHcLrpdUCA8Psp7JEkUNw="
+
+
+  file: coverage-result.tar.gz
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true
